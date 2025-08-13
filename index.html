@@ -2,26 +2,28 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Расходы с хэштегами — MVP v5</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#0b0d12" />
+  <title>ManyMoney — v5.1 (мобильная оптимизация)</title>
   <style>
     :root{
       --bg:#0b0d12; --card:#121621; --muted:#9aa3b2; --text:#f2f5fb; --accent:#67b7ff; --green:#36d07a; --red:#ff6b6b;
-      --chip:#161b28; --chip-on:#2c3a5c; --border:#2a3143; --btn:#1d2537; --btn-hover:#283453;
-      --chip-text:#dbe3f5; --chip-muted:#b8c2d8;
+      --chip:#161b28; --chip-on:#2c3a5c; --border:#2a3143; --btn:#1d2537; --btn-hover:#283453; --chip-text:#dbe3f5; --chip-muted:#b8c2d8;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{margin:0; background:var(--bg); color:var(--text); font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial}
     .wrap{max-width:1040px; margin:0 auto; padding:16px; display:grid; gap:16px}
 
-    /* app toolbar */
+    /* toolbar */
     .toolbar{display:flex; justify-content:space-between; align-items:center}
     .tabs{display:flex; gap:8px}
     .tab{padding:8px 12px; border-radius:10px; border:1px solid var(--border); background:var(--btn); color:var(--text); cursor:pointer}
     .tab.active{background:var(--chip-on); border-color:var(--accent)}
     .brand{color:var(--muted)}
 
+    /* input view */
     .top{display:grid; gap:12px; background:var(--card); padding:16px; border:1px solid var(--border); border-radius:16px}
     .display{display:flex; align-items:center; justify-content:space-between; background:#0f1320; border:1px solid var(--border); border-radius:12px; padding:14px 16px}
     .amount{font-size:28px; font-variant-numeric:tabular-nums; letter-spacing:0.5px}
@@ -45,12 +47,11 @@
     .chips{display:flex; gap:8px; flex-wrap:wrap}
     .chip{background:var(--chip); border:1px solid var(--border); padding:8px 10px; border-radius:999px; cursor:pointer; user-select:none; color:var(--chip-text)}
     .chip[aria-pressed="true"], .chip.active{background:var(--chip-on); border-color:var(--accent); color:#fff}
-    .chip.danger{border-color:var(--red);}
+    .chip.danger{border-color:var(--red)}
     .addline{display:flex; gap:8px}
     .addline input{flex:1; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:#0f1320; color:var(--text)}
     .addline button{padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--btn); color:var(--text); cursor:pointer}
     .addline button:hover{background:var(--btn-hover)}
-
     .searchline{display:flex; gap:8px; align-items:center}
     .searchline input{flex:1; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:#0f1320; color:var(--text)}
 
@@ -89,10 +90,13 @@
     .mini th,.mini td{border-bottom:1px solid var(--border); padding:6px; font-size:14px}
     .flex{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
 
-    @media (min-width:1000px){
-      .grid{display:grid; grid-template-columns:1fr 1fr; gap:16px}
-      .top{grid-column:1/-1}
-    }
+    @media (min-width:1000px){ .grid{display:grid; grid-template-columns:1fr 1fr; gap:16px} .top{grid-column:1/-1} }
+
+    /* iOS: не увеличивать зум на фокусе + ускорить нажатия */
+    input, select, textarea, button{ font-size:16px; -webkit-text-size-adjust:100%; touch-action:manipulation }
+
+    /* Мобильная сетка для диаграммы */
+    @media (max-width:480px){ .chartRow{ grid-template-columns:1fr } #donut{ width:100%; height:auto } }
   </style>
 </head>
 <body>
@@ -103,7 +107,7 @@
         <button id="tabStats" class="tab">Статистика</button>
         <button id="tabAnalytics" class="tab">Аналитика</button>
       </div>
-      <div class="brand">MVP v5</div>
+      <div class="brand">ManyMoney v5.1</div>
     </div>
 
     <!-- INPUT VIEW -->
@@ -116,17 +120,10 @@
         </div>
       </div>
       <div class="keypad" aria-label="Клавиатура">
-        <button data-key="1">1</button>
-        <button data-key="2">2</button>
-        <button data-key="3">3</button>
-        <button data-key="4">4</button>
-        <button data-key="5">5</button>
-        <button data-key="6">6</button>
-        <button data-key="7">7</button>
-        <button data-key="8">8</button>
-        <button data-key="9">9</button>
-        <button data-key="," title="," aria-label="Запятая">,</button>
-        <button data-key="0">0</button>
+        <button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button>
+        <button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button>
+        <button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button>
+        <button data-key="," title="," aria-label="," >,</button><button data-key="0">0</button>
         <button data-action="back" title="Удалить">⌫</button>
         <button class="wide" data-action="clear">Сброс</button>
         <button class="wide" id="saveBtn">Сохранить</button>
@@ -167,15 +164,10 @@
     </section>
 
     <section class="list" id="viewInputList" aria-label="Последние операции">
-      <div class="muted" style="margin-bottom:8px">Нажми по строке для редактирования • Правый клик по чипу категории/тега — удалить его</div>
+      <div class="muted" style="margin-bottom:8px">Нажми по строке для редактирования • Правый клик по чипу категории/тега — удалить</div>
       <table>
         <thead>
-          <tr>
-            <th>Дата</th>
-            <th>Сумма</th>
-            <th>Категория</th>
-            <th>Теги</th>
-          </tr>
+          <tr><th>Дата</th><th>Сумма</th><th>Категория</th><th>Теги</th></tr>
         </thead>
         <tbody id="txTable"></tbody>
       </table>
@@ -224,26 +216,16 @@
       </div>
 
       <div class="cards">
-        <div class="card">
-          <h3>Топ-теги</h3>
-          <table class="mini"><tbody id="topTags"></tbody></table>
-        </div>
-        <div class="card">
-          <h3>Парные теги</h3>
-          <table class="mini"><tbody id="pairs"></tbody></table>
-        </div>
-        <div class="card">
-          <h3>Если сократить тег</h3>
+        <div class="card"><h3>Топ-теги</h3><table class="mini"><tbody id="topTags"></tbody></table></div>
+        <div class="card"><h3>Парные теги</h3><table class="mini"><tbody id="pairs"></tbody></table></div>
+        <div class="card"><h3>Если сократить тег</h3>
           <div class="flex">
             <select id="whatIfTag"></select>
             <input id="whatIfPct" type="range" min="10" max="90" step="10" value="30" />
             <span id="whatIfOut" class="muted"></span>
           </div>
         </div>
-        <div class="card">
-          <h3>Тренд по дням</h3>
-          <canvas id="trend" width="520" height="140"></canvas>
-        </div>
+        <div class="card"><h3>Тренд по дням</h3><canvas id="trend" width="520" height="140"></canvas></div>
       </div>
     </section>
   </div>
@@ -364,7 +346,7 @@
       if(e.key==='-') setType('expense');
     });
 
-    // chips sorting helpers by usage
+    // usage counts (for dynamic sorting)
     function usageMaps(){
       const cat=new Map(), tag=new Map();
       S.tx.forEach(r=>{
@@ -425,7 +407,7 @@
           <td>${dt.toLocaleString()}</td>
           <td style="white-space:nowrap; ${r.amount<0?`color:var(--red)`:`color:var(--green)`}">${r.amount<0?'':'+'}${r.amount.toLocaleString(undefined,{maximumFractionDigits:2})}</td>
           <td>${r.category ? `<span class="badge">${r.category}</span>` : '<span class="muted">—</span>'}</td>
-          <td>${(r.tags||[]).map(t=>`<span class="badge">#${t}</span>`).join(' ') || '<span class="muted">—</span>'}</td>`; tr.style.cursor='pointer'; tr.title='Нажми, чтобы редактировать'; tr.onclick=()=>openEditor(r.id); txTable.appendChild(tr); }); }
+          <td>${(r.tags||[]).map(t=>`<span class=\"badge\">#${t}</span>`).join(' ') || '<span class="muted">—</span>'}</td>`; tr.style.cursor='pointer'; tr.title='Нажми, чтобы редактировать'; tr.onclick=()=>openEditor(r.id); txTable.appendChild(tr); }); }
     saveBtn.onclick=saveTx; saveBottom.onclick=saveTx;
 
     // editor
@@ -489,7 +471,7 @@
     function renderDonut(data){ donut.innerHTML=''; const total=data.reduce((s,x)=>s+x.sum,0); const cx=100,cy=100,r=80,stroke=32; if(total<=0){ donut.innerHTML='<text x="100" y="105" text-anchor="middle" fill="#9aa3b2">Нет данных</text>'; return; } let start=-90; data.forEach((it,i)=>{ const frac=it.sum/total; const ang=Math.max(frac*360,0.5); const end=start+ang; const large=ang>180?1:0; const a=polar(cx,cy,r,start), b=polar(cx,cy,r,end); const path=`M ${a.x} ${a.y} A ${r} ${r} 0 ${large} 1 ${b.x} ${b.y}`; const arc=document.createElementNS('http://www.w3.org/2000/svg','path'); arc.setAttribute('d',path); arc.setAttribute('fill','none'); arc.setAttribute('stroke',palette(i)); arc.setAttribute('stroke-linecap','butt'); arc.setAttribute('stroke-width',stroke); donut.appendChild(arc); start=end; }); const hole=document.createElementNS('http://www.w3.org/2000/svg','circle'); hole.setAttribute('cx',cx); hole.setAttribute('cy',cy); hole.setAttribute('r',r-stroke/2-1); hole.setAttribute('fill', '#0b0d12'); donut.appendChild(hole); const t1=document.createElementNS('http://www.w3.org/2000/svg','text'); t1.setAttribute('x','100'); t1.setAttribute('y','96'); t1.setAttribute('text-anchor','middle'); t1.setAttribute('fill', '#dbe3f5'); t1.textContent='Итого'; const t2=document.createElementNS('http://www.w3.org/2000/svg','text'); t2.setAttribute('x','100'); t2.setAttribute('y','118'); t2.setAttribute('text-anchor','middle'); t2.setAttribute('fill', '#ffffff'); t2.textContent=total.toLocaleString('ru-RU'); donut.appendChild(t1); donut.appendChild(t2); }
     function renderStats(){ const rows=filteredTx(); const groups=groupRows(rows); const total=rows.reduce((s,x)=>s+Math.abs(x.amount),0); const {title}=rangeFrom(S.statCursor, S.statPeriod); periodTitle.textContent=title; totalLabel.textContent=(S.statType==='expense'?'Всего потрачено: ':'Всего заработано: ')+ total.toLocaleString('ru-RU'); renderDonut(groups); legendBody.innerHTML=''; groups.forEach((g,i)=>{ const pct= total? Math.round(g.sum*100/total):0; const tr=document.createElement('tr'); tr.innerHTML=`<td><span class="swatch" style="background:${palette(i)}"></span>${g.name}</td><td>${pct}%</td><td>${g.sum.toLocaleString('ru-RU')}</td>`; legendBody.appendChild(tr); }); if(groups.length===0){ legendBody.innerHTML='<tr><td class="muted" colspan="3">Нет данных за период</td></tr>'; } }
 
-    // analytics logic (unchanged, uses tags)
+    // analytics logic
     const aDay=$id('aDay'), aMonth=$id('aMonth'), aYear=$id('aYear');
     const aTitle=$id('aTitle');
     $id('aPrev').onclick=()=>{ shiftAnalytic(-1); };
